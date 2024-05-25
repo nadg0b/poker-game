@@ -73,7 +73,7 @@ class PokerGame(object):
     
 
     def print_players(self):
-        '''function to print all players
+        '''function to #print all players
         '''
         for player in self.players:
             print(f"Player {player.name} has ${player.balance}")
@@ -97,23 +97,23 @@ class PokerGame(object):
         '''function to determine player's hand
         '''
         for player in self.players:
-            print(f"{player.name} has {self.comm_cards + player.hole_cards}")
+            #print(f"{player.name} has {self.comm_cards + player.hole_cards}")
             cards = sorted(self.comm_cards + player.hole_cards, reverse=True)
 
             # dict to store all player's combinations
             hands = {}
 
             ranks = [card.rank for card in cards]
-            # print("ranks", ranks)
+            # #print("ranks", ranks)
 
             suits = [card.suit for card in cards]
-            # print("suits", suits)
+            # #print("suits", suits)
 
             r_count = dict((rank, ranks.count(rank)) for rank in set(ranks))
-            # print("ranks count", r_count)
+            # #print("ranks count", r_count)
 
             s_count = dict((suit, suits.count(suit)) for suit in self.SUITS)
-            # print("suits count", s_count)
+            # #print("suits count", s_count)
 
             kinds = {
                      2: [],
@@ -127,28 +127,28 @@ class PokerGame(object):
                     for p in range(len(kind)//k):
                         kinds[k] += [kind[p*k:p*k+k]]
 
-            # print("kinds", kinds)
+            # #print("kinds", kinds)
 
             high_card = cards[0]
-            # print("high card", high_card)
+            # #print("high card", high_card)
             
             pairs = kinds[2]
-            # print("pairs", pairs)
+            # #print("pairs", pairs)
 
             t_pairs = pairs if len(pairs) >= 2 else []
-            # print("two pairs", t_pairs)
+            # #print("two pairs", t_pairs)
 
             triples = kinds[3]
-            # print("triples", triples)
+            # #print("triples", triples)
 
             full_house = []
             if pairs and triples:
                 m_pair = sorted([p if all(map(lambda c: c not in triples[-1], p)) else [] for p in pairs])
                 if m_pair[-1]: full_house = [triples[-1] + m_pair[-1]]
-            # print("full house", full_house)
+            # #print("full house", full_house)
 
             quads = kinds[4]
-            # print("quads", quads)
+            # #print("quads", quads)
 
             straight = [cards[0]]
             for i in range(1, len(cards)):
@@ -169,22 +169,22 @@ class PokerGame(object):
 
             if len(set(c.rank for c in straight)) < 5:
                 straight.clear()
-            # print("straight", straight)
+            # #print("straight", straight)
 
             flush = list(filter(lambda c: s_count[c.suit]>=5, cards))
-            # print("flush", flush)
+            # #print("flush", flush)
 
             s_flush = []
             if straight:
                 if any([len(list(filter(lambda c: c.suit == s, straight))) >= 5 for s in self.SUITS]):
                     s_flush = straight
-            # print("straight flush", s_flush)
+            # #print("straight flush", s_flush)
 
             r_flush = []
             if s_flush:
                 if s_flush[0].rank == 14:
                     r_flush = s_flush
-            # print("royal flush", r_flush)
+            # #print("royal flush", r_flush)
 
             hands["high card"] = high_card
             hands["pair"] = pairs
@@ -209,7 +209,7 @@ class PokerGame(object):
             if r_flush: self.test_count["royal flush"] += 1
 
             player.hands = hands
-            print(f"{player.name}\n{json.dumps(player.hands, indent=4)}")
+            #print(f"{player.name}\n{json.dumps(player.hands, indent=4)}")
 
 
     def get_winner(self):
@@ -217,12 +217,18 @@ class PokerGame(object):
         for player in self.players:
             p_hands = [hand for hand in player.hands.items() if hand[1]]
             winners.append((player.name, max(p_hands, key=lambda h: self.HANDS_RATE[h[0]])))
-        for w in winners:
-            print(w)
+
+        print(winners)
+        print(max(winners, key=lambda h: self.HANDS_RATE[h[1][0]]))
+
+        # how to determine winner according to their hands?
+        # what if they equal -> calculate the highest card in hand -> if they
+        # equal -> get next highest kicker (cards do not intersect) -> 
+        # there will be one or more winner, multiple winners split the bank
                     
 
     def test_play(self, table=None):
-        '''function to test behaviour of main class
+        '''function to test behavior of main class
         '''
         self.shuffle()
         self.table = table if table else self.deck[:5+2*len(self.players)]
